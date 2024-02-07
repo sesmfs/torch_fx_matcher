@@ -39,4 +39,4 @@ with torch.no_grad():
     fused_output = matcher.traced(input)
 
 diff = (original_output - fused_output).abs()
-print(f"Absolute Different: max={diff.max():.5f}, sum={diff.sum():.5f}")
+print(f"Absolute difference: max={diff.max():.5f}, sum={diff.sum():.5f}")
