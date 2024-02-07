@@ -184,7 +184,7 @@ class Matcher:
         return conv
 
     def _match(self, condition, anchor):
-        if self._node_module_name(anchor) not in condition.names:
+        if "?" not in condition.names and self._node_module_name(anchor) not in condition.names:
             return False
         
         all_inputs_is_placeholder  = all([item.type == "placeholder" for item in condition.args])
