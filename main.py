@@ -1,13 +1,13 @@
-# torch_fx_matcher
-An easy pattern match tool for the torch.fx.
-
-# Demonstration
-```python
 from matcher import Matcher
 from torchvision.models import resnet
+import torch
 
 # step1. Create a resnet18 model by the torchvision.
 model = resnet.resnet18(True).eval()
+input = torch.randn(1, 3, 224, 224)
+
+with torch.no_grad():
+    original_output = model(input)
 
 # step2. Trace the model using the torch.fx
 matcher = Matcher().trace(model)
@@ -31,35 +31,12 @@ def fuse_bn_replacement(matcher, isubgraph, subgraph):
     matcher.traced.graph.erase_node(bn)
 
 matcher.replace(fuse_bn_replacement)
-```
 
-- Run demo:
-```bash
-$> python main.py
-```
+# pip install tabular  # if there is an error about the tabular
+# matcher.traced.graph.print_tabular()
 
-# Subsraph Rules
-```python
-layername1/layername2([input_argument1, input_argument2], [output_argument1, output_argument2])
-layername(input_argument, output_argument)
+with torch.no_grad():
+    fused_output = matcher.traced(input)
 
-where:
-   ? will match any layer or argument.
-
-For example1:
-    """
-    Conv(?, c0)
-    Sigmoid(c0, s0)
-    Mul([s0, c0], ?)
-    """
-
-For example2:
-    """
-    Conv/Avgpool(?, c0)
-    ?(c0, s0)
-    Mul([s0, c0], ?)
-    """
-```
-
-# Reference
-- No reference
+diff = (original_output - fused_output).abs()
+print(f"Absolute Different: max={diff.max():.5f}, sum={diff.sum():.5f}")
