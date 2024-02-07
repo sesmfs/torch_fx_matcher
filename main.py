@@ -20,6 +20,7 @@ matcher.match(
     """
 )
 matcher.print_matchs()
+print(matcher.lexer.graph)
 
 # step4. Fuse the Conv2d and the BatchNormalization layer based on traced model.
 def fuse_bn_replacement(matcher, isubgraph, subgraph):
